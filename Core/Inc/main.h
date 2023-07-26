@@ -67,6 +67,11 @@ void Error_Handler(void);
 #define TOF_INT_Pin GPIO_PIN_0
 #define TOF_INT_GPIO_Port GPIOB
 #define TOF_INT_EXTI_IRQn EXTI0_IRQn
+#define TOF_XSHUT_2_Pin GPIO_PIN_10
+#define TOF_XSHUT_2_GPIO_Port GPIOA
+#define TOF_INT_2_Pin GPIO_PIN_11
+#define TOF_INT_2_GPIO_Port GPIOA
+#define TOF_INT_2_EXTI_IRQn EXTI15_10_IRQn
 #define TOF_XSHUT_Pin GPIO_PIN_12
 #define TOF_XSHUT_GPIO_Port GPIOA
 #define SWDIO_Pin GPIO_PIN_13
