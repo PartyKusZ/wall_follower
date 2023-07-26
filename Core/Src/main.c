@@ -129,14 +129,15 @@ int main(void)
    Dev_2->I2cDevAddr = 0x52;
    HAL_GPIO_WritePin(TOF_XSHUT_GPIO_Port, TOF_XSHUT_Pin, GPIO_PIN_RESET); // Disable XSHUT
    HAL_Delay(20);
-   HAL_GPIO_WritePin(TOF_XSHUT_2_GPIO_Port, TOF_INT_2_Pin, GPIO_PIN_RESET); // Disable XSHUT
+   HAL_GPIO_WritePin(TOF_XSHUT_2_GPIO_Port, TOF_XSHUT_2_Pin, GPIO_PIN_RESET); // Disable XSHUT
    HAL_Delay(20);
-   HAL_GPIO_WritePin(TOF_XSHUT_2_GPIO_Port, TOF_INT_2_Pin, GPIO_PIN_SET);
+   HAL_GPIO_WritePin(TOF_XSHUT_2_GPIO_Port, TOF_XSHUT_2_Pin, GPIO_PIN_SET);
    HAL_Delay(20);
-   Dev_2->I2cDevAddr = 0x52;
+
    VL53L0X_SetDeviceAddress(Dev_2,0x62);
+   Dev_2->I2cDevAddr = 0x62;
    HAL_Delay(20);
-   HAL_GPIO_WritePin(TOF_XSHUT_GPIO_Port, TOF_INT_Pin, GPIO_PIN_SET);
+   HAL_GPIO_WritePin(TOF_XSHUT_GPIO_Port, TOF_XSHUT_Pin, GPIO_PIN_SET);
 
 
 
@@ -164,7 +165,10 @@ int main(void)
    	 VL53L0X_SetVcselPulsePeriod(Dev, VL53L0X_VCSEL_PERIOD_FINAL_RANGE, 14);
 
    	 VL53L0X_StartMeasurement(Dev);
+   	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
+
+   	HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
    	VL53L0X_WaitDeviceBooted(Dev_2);
    	   	VL53L0X_DataInit(Dev_2);
    	   	VL53L0X_StaticInit(Dev_2);
@@ -182,7 +186,7 @@ int main(void)
 
    	   	 VL53L0X_StartMeasurement(Dev_2);
 
-   	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+   	  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 
   /* USER CODE END 2 */
@@ -208,7 +212,7 @@ int main(void)
 	 		  		VL53L0X_ClearInterruptMask(Dev_2, VL53L0X_REG_SYSTEM_INTERRUPT_GPIO_NEW_SAMPLE_READY);
 	 		MessageLen = sprintf((char*)Message, "Measured distance_2: %i\n\r", RangingData_2.RangeMilliMeter);
 	 		HAL_UART_Transmit(&huart2, Message, MessageLen, 100);
-	 		TofDataRead = 0;
+	 		TofDataRead_2 = 0;
 	 		HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
 	 	  }
 
