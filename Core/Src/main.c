@@ -89,10 +89,7 @@ int main(void)
 	    uint8_t VhvSettings;
 	    uint8_t PhaseCal;
 
-	    uint32_t refSpadCount_2;
-	    	    uint8_t isApertureSpads_2;
-	    	    uint8_t VhvSettings_2;
-	    	    uint8_t PhaseCal_2;
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -131,13 +128,9 @@ int main(void)
    HAL_Delay(20);
    HAL_GPIO_WritePin(TOF_XSHUT_2_GPIO_Port, TOF_XSHUT_2_Pin, GPIO_PIN_RESET); // Disable XSHUT
    HAL_Delay(20);
-   HAL_GPIO_WritePin(TOF_XSHUT_2_GPIO_Port, TOF_XSHUT_2_Pin, GPIO_PIN_SET);
+   HAL_GPIO_WritePin(TOF_XSHUT_GPIO_Port, TOF_XSHUT_Pin, GPIO_PIN_SET);
    HAL_Delay(20);
 
-   VL53L0X_SetDeviceAddress(Dev_2,0x62);
-   Dev_2->I2cDevAddr = 0x62;
-   HAL_Delay(20);
-   HAL_GPIO_WritePin(TOF_XSHUT_GPIO_Port, TOF_XSHUT_Pin, GPIO_PIN_SET);
 
 
 
@@ -148,9 +141,17 @@ int main(void)
 
 
    	HAL_NVIC_DisableIRQ(EXTI0_IRQn);
+ 	HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
+
+ 	VL53L0X_WaitDeviceBooted(Dev);
+ 	VL53L0X_DataInit( Dev );
+
+ 	MessageLen = sprintf((char*)Message,"Addr change 1: %i \n\r\n\r", VL53L0X_SetDeviceAddress(Dev, 0x54));
+   HAL_UART_Transmit(&huart2, Message, MessageLen, 100);
+   Dev->I2cDevAddr = 0x54;
 
    	VL53L0X_WaitDeviceBooted(Dev);
-   	VL53L0X_DataInit(Dev);
+   	//VL53L0X_DataInit(Dev);
    	VL53L0X_StaticInit(Dev);
    	VL53L0X_PerformRefCalibration(Dev, &VhvSettings, &PhaseCal);
     VL53L0X_PerformRefSpadManagement(Dev, &refSpadCount, &isApertureSpads);
@@ -165,15 +166,21 @@ int main(void)
    	 VL53L0X_SetVcselPulsePeriod(Dev, VL53L0X_VCSEL_PERIOD_FINAL_RANGE, 14);
 
    	 VL53L0X_StartMeasurement(Dev);
-   	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
 
-   	HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
+   	 HAL_GPIO_WritePin(TOF_XSHUT_2_GPIO_Port, TOF_XSHUT_2_Pin, GPIO_PIN_SET);
+   	   HAL_Delay(20);
+
    	VL53L0X_WaitDeviceBooted(Dev_2);
-   	   	VL53L0X_DataInit(Dev_2);
+	VL53L0X_DataInit(Dev_2);
+   	MessageLen = sprintf((char*)Message,"Addr change 2: %i \n\r\n\r", VL53L0X_SetDeviceAddress(Dev_2, 0x56));
+   	   HAL_UART_Transmit(&huart2, Message, MessageLen, 100);
+   	   Dev_2->I2cDevAddr = 0x56;
+    	VL53L0X_WaitDeviceBooted(Dev_2);
+
    	   	VL53L0X_StaticInit(Dev_2);
-   	   	VL53L0X_PerformRefCalibration(Dev_2, &VhvSettings_2, &PhaseCal_2);
-   	    VL53L0X_PerformRefSpadManagement(Dev_2, &refSpadCount_2, &isApertureSpads_2);
+   	   	VL53L0X_PerformRefCalibration(Dev_2, &VhvSettings, &PhaseCal);
+   	    VL53L0X_PerformRefSpadManagement(Dev_2, &refSpadCount, &isApertureSpads);
    	   	VL53L0X_SetDeviceMode(Dev_2, VL53L0X_DEVICEMODE_CONTINUOUS_RANGING);
 
    	    VL53L0X_SetLimitCheckEnable(Dev_2, VL53L0X_CHECKENABLE_SIGMA_FINAL_RANGE, 1);
@@ -185,7 +192,7 @@ int main(void)
    	   	 VL53L0X_SetVcselPulsePeriod(Dev_2, VL53L0X_VCSEL_PERIOD_FINAL_RANGE, 14);
 
    	   	 VL53L0X_StartMeasurement(Dev_2);
-
+   	  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
    	  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 
