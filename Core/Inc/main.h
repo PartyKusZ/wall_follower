@@ -50,6 +50,8 @@ extern "C" {
 
 /* USER CODE END EM */
 
+void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
@@ -64,22 +66,36 @@ void Error_Handler(void);
 #define VCP_TX_GPIO_Port GPIOA
 #define VCP_RX_Pin GPIO_PIN_3
 #define VCP_RX_GPIO_Port GPIOA
-#define TOF_INT_Pin GPIO_PIN_0
-#define TOF_INT_GPIO_Port GPIOB
-#define TOF_INT_EXTI_IRQn EXTI0_IRQn
-#define TOF_XSHUT_2_Pin GPIO_PIN_10
+#define TOF_XSHUT_2_Pin GPIO_PIN_7
 #define TOF_XSHUT_2_GPIO_Port GPIOA
-#define TOF_INT_2_Pin GPIO_PIN_11
-#define TOF_INT_2_GPIO_Port GPIOA
-#define TOF_INT_2_EXTI_IRQn EXTI15_10_IRQn
-#define TOF_XSHUT_Pin GPIO_PIN_12
-#define TOF_XSHUT_GPIO_Port GPIOA
+#define TOF_INT_0_Pin GPIO_PIN_0
+#define TOF_INT_0_GPIO_Port GPIOB
+#define TOF_INT_0_EXTI_IRQn EXTI0_IRQn
+#define TOF_INT_2_Pin GPIO_PIN_1
+#define TOF_INT_2_GPIO_Port GPIOB
+#define SILNIK_L_2_Pin GPIO_PIN_8
+#define SILNIK_L_2_GPIO_Port GPIOA
+#define SILNIK_L_1_Pin GPIO_PIN_9
+#define SILNIK_L_1_GPIO_Port GPIOA
+#define TOF_XSHUT_1_Pin GPIO_PIN_10
+#define TOF_XSHUT_1_GPIO_Port GPIOA
+#define TOF_INT_1_Pin GPIO_PIN_11
+#define TOF_INT_1_GPIO_Port GPIOA
+#define TOF_INT_1_EXTI_IRQn EXTI15_10_IRQn
+#define TOF_XSHUT_0_Pin GPIO_PIN_12
+#define TOF_XSHUT_0_GPIO_Port GPIOA
 #define SWDIO_Pin GPIO_PIN_13
 #define SWDIO_GPIO_Port GPIOA
 #define SWCLK_Pin GPIO_PIN_14
 #define SWCLK_GPIO_Port GPIOA
-#define LD3_Pin GPIO_PIN_3
-#define LD3_GPIO_Port GPIOB
+#define SILNIK_P_2_Pin GPIO_PIN_15
+#define SILNIK_P_2_GPIO_Port GPIOA
+#define SILNIK_P_1_Pin GPIO_PIN_3
+#define SILNIK_P_1_GPIO_Port GPIOB
+#define PWM_L_Pin GPIO_PIN_4
+#define PWM_L_GPIO_Port GPIOB
+#define PWM_P_Pin GPIO_PIN_5
+#define PWM_P_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
