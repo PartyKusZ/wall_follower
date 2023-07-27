@@ -32,24 +32,24 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-VL53L0X_tests.elf \
+wall_follower.elf \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-VL53L0X_tests.list \
+wall_follower.list \
 
 OBJCOPY_BIN += \
-VL53L0X_tests.bin \
+wall_follower.bin \
 
 
 # All Target
-all: VL53L0X_tests.elf secondary-outputs
+all: wall_follower.elf secondary-outputs
 
 # Tool invocations
-VL53L0X_tests.elf: $(OBJS) $(USER_OBJS) /home/kubus/STM32CubeIDE/workspace_1.4.0/VL53L0X_tests/STM32F303K8TX_FLASH.ld
-	arm-none-eabi-gcc -o "VL53L0X_tests.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/kubus/STM32CubeIDE/workspace_1.4.0/VL53L0X_tests/STM32F303K8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="VL53L0X_tests.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+wall_follower.elf: $(OBJS) $(USER_OBJS) /home/kubus/STM32CubeIDE/workspace_1.4.0/VL53L0X_tests/STM32F303K8TX_FLASH.ld
+	arm-none-eabi-gcc -o "wall_follower.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/kubus/STM32CubeIDE/workspace_1.4.0/VL53L0X_tests/STM32F303K8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="wall_follower.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -58,13 +58,13 @@ default.size.stdout: $(EXECUTABLES)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-VL53L0X_tests.list: $(EXECUTABLES)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "VL53L0X_tests.list"
+wall_follower.list: $(EXECUTABLES)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "wall_follower.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-VL53L0X_tests.bin: $(EXECUTABLES)
-	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "VL53L0X_tests.bin"
+wall_follower.bin: $(EXECUTABLES)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "wall_follower.bin"
 	@echo 'Finished building: $@'
 	@echo ' '
 
