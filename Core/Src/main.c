@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "distance_sensos.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -50,19 +51,7 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 uint8_t Message[64];
 uint8_t MessageLen;
-
-VL53L0X_RangingMeasurementData_t RangingData;
-VL53L0X_Dev_t  vl53l0x_c; // center module
-VL53L0X_DEV    Dev = &vl53l0x_c;
-
-volatile uint8_t TofDataRead;
-
-
-VL53L0X_RangingMeasurementData_t RangingData_2;
-VL53L0X_Dev_t  vl53l0x_c_2; // center module
-VL53L0X_DEV    Dev_2 = &vl53l0x_c_2;
-
-volatile uint8_t TofDataRead_2;
+distance_sensors_t distance_sensors;
 
 /* USER CODE END PV */
 
@@ -89,10 +78,6 @@ static void MX_TIM17_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	    uint32_t refSpadCount;
-	    uint8_t isApertureSpads;
-	    uint8_t VhvSettings;
-	    uint8_t PhaseCal;
 
 
   /* USER CODE END 1 */
@@ -126,17 +111,7 @@ int main(void)
    HAL_UART_Transmit(&huart2, Message, MessageLen, 100);
 
 
-   Dev->I2cHandle = &hi2c1;
-   Dev->I2cDevAddr = 0x52;
 
-   Dev_2->I2cHandle = &hi2c1;
-   Dev_2->I2cDevAddr = 0x52;
-   HAL_GPIO_WritePin(TOF_XSHUT_0_GPIO_Port, TOF_XSHUT_0_Pin, GPIO_PIN_RESET); // Disable XSHUT
-   HAL_Delay(20);
-   HAL_GPIO_WritePin(TOF_XSHUT_1_GPIO_Port, TOF_XSHUT_1_Pin, GPIO_PIN_RESET); // Disable XSHUT
-   HAL_Delay(20);
-   HAL_GPIO_WritePin(TOF_XSHUT_0_GPIO_Port, TOF_XSHUT_0_Pin, GPIO_PIN_SET);
-   HAL_Delay(20);
 
 
 
@@ -147,86 +122,30 @@ int main(void)
 
 
 
-   	HAL_NVIC_DisableIRQ(EXTI0_IRQn);
- 	HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
-
- 	VL53L0X_WaitDeviceBooted(Dev);
- 	VL53L0X_DataInit( Dev );
-
- 	MessageLen = sprintf((char*)Message,"Addr change 1: %i \n\r\n\r", VL53L0X_SetDeviceAddress(Dev, 0x54));
-   HAL_UART_Transmit(&huart2, Message, MessageLen, 100);
-   Dev->I2cDevAddr = 0x54;
-
-   	VL53L0X_WaitDeviceBooted(Dev);
-   	//VL53L0X_DataInit(Dev);
-   	VL53L0X_StaticInit(Dev);
-   	VL53L0X_PerformRefCalibration(Dev, &VhvSettings, &PhaseCal);
-    VL53L0X_PerformRefSpadManagement(Dev, &refSpadCount, &isApertureSpads);
-   	VL53L0X_SetDeviceMode(Dev, VL53L0X_DEVICEMODE_CONTINUOUS_RANGING);
-
-    VL53L0X_SetLimitCheckEnable(Dev, VL53L0X_CHECKENABLE_SIGMA_FINAL_RANGE, 1);
-   	 VL53L0X_SetLimitCheckEnable(Dev, VL53L0X_CHECKENABLE_SIGNAL_RATE_FINAL_RANGE, 1);
-   	 VL53L0X_SetLimitCheckValue(Dev, VL53L0X_CHECKENABLE_SIGNAL_RATE_FINAL_RANGE, (FixPoint1616_t)(0.1*65536));
-   	 VL53L0X_SetLimitCheckValue(Dev, VL53L0X_CHECKENABLE_SIGMA_FINAL_RANGE, (FixPoint1616_t)(60*65536));
-   	 VL53L0X_SetMeasurementTimingBudgetMicroSeconds(Dev, 33000);
-    VL53L0X_SetVcselPulsePeriod(Dev, VL53L0X_VCSEL_PERIOD_PRE_RANGE, 18);
-   	 VL53L0X_SetVcselPulsePeriod(Dev, VL53L0X_VCSEL_PERIOD_FINAL_RANGE, 14);
-
-   	 VL53L0X_StartMeasurement(Dev);
-
-
-   	 HAL_GPIO_WritePin(TOF_XSHUT_1_GPIO_Port, TOF_XSHUT_1_Pin, GPIO_PIN_SET);
-   	   HAL_Delay(20);
-
-   	VL53L0X_WaitDeviceBooted(Dev_2);
-	VL53L0X_DataInit(Dev_2);
-   	MessageLen = sprintf((char*)Message,"Addr change 2: %i \n\r\n\r", VL53L0X_SetDeviceAddress(Dev_2, 0x56));
-   	   HAL_UART_Transmit(&huart2, Message, MessageLen, 100);
-   	   Dev_2->I2cDevAddr = 0x56;
-    	VL53L0X_WaitDeviceBooted(Dev_2);
-
-   	   	VL53L0X_StaticInit(Dev_2);
-   	   	VL53L0X_PerformRefCalibration(Dev_2, &VhvSettings, &PhaseCal);
-   	    VL53L0X_PerformRefSpadManagement(Dev_2, &refSpadCount, &isApertureSpads);
-   	   	VL53L0X_SetDeviceMode(Dev_2, VL53L0X_DEVICEMODE_CONTINUOUS_RANGING);
-
-   	    VL53L0X_SetLimitCheckEnable(Dev_2, VL53L0X_CHECKENABLE_SIGMA_FINAL_RANGE, 1);
-   	   	 VL53L0X_SetLimitCheckEnable(Dev_2, VL53L0X_CHECKENABLE_SIGNAL_RATE_FINAL_RANGE, 1);
-   	   	 VL53L0X_SetLimitCheckValue(Dev_2, VL53L0X_CHECKENABLE_SIGNAL_RATE_FINAL_RANGE, (FixPoint1616_t)(0.1*65536));
-   	   	 VL53L0X_SetLimitCheckValue(Dev_2, VL53L0X_CHECKENABLE_SIGMA_FINAL_RANGE, (FixPoint1616_t)(60*65536));
-   	   	 VL53L0X_SetMeasurementTimingBudgetMicroSeconds(Dev_2, 33000);
-   	    VL53L0X_SetVcselPulsePeriod(Dev_2, VL53L0X_VCSEL_PERIOD_PRE_RANGE, 18);
-   	   	 VL53L0X_SetVcselPulsePeriod(Dev_2, VL53L0X_VCSEL_PERIOD_FINAL_RANGE, 14);
-
-   	   	 VL53L0X_StartMeasurement(Dev_2);
-   	  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
-   	  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
-
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+   distance_sensors_init(&distance_sensors, &hi2c1);
   while (1)
   {
 
-	  if(TofDataRead == 1)
+	  if(distance_sensors_is_data_ready(&distance_sensors, 0))
 	  {
-		  VL53L0X_GetRangingMeasurementData(Dev, &RangingData);
-		  		VL53L0X_ClearInterruptMask(Dev, VL53L0X_REG_SYSTEM_INTERRUPT_GPIO_NEW_SAMPLE_READY);
-		MessageLen = sprintf((char*)Message, "Measured distance: %i\n\r", RangingData.RangeMilliMeter);
+
+		MessageLen = sprintf((char*)Message, "Measured distance: %i\n\r",distance_sensors_get_distance(&distance_sensors, 0));
 		HAL_UART_Transmit(&huart2, Message, MessageLen, 100);
-		TofDataRead = 0;
+		distance_sensors_cleer_interrupt(&distance_sensors, 0);
 
 	  }
 
-	  if(TofDataRead_2 == 1)
+	  if(distance_sensors_is_data_ready(&distance_sensors, 1))
 	 	  {
-	 		  VL53L0X_GetRangingMeasurementData(Dev_2, &RangingData_2);
-	 		  		VL53L0X_ClearInterruptMask(Dev_2, VL53L0X_REG_SYSTEM_INTERRUPT_GPIO_NEW_SAMPLE_READY);
-	 		MessageLen = sprintf((char*)Message, "Measured distance_2: %i\n\r", RangingData_2.RangeMilliMeter);
+
+	 		MessageLen = sprintf((char*)Message, "Measured distance_2: %i\n\r", distance_sensors_get_distance(&distance_sensors, 1));
 	 		HAL_UART_Transmit(&huart2, Message, MessageLen, 100);
-	 		TofDataRead_2 = 0;
+	 		distance_sensors_cleer_interrupt(&distance_sensors, 1);
 
 	 	  }
 
@@ -560,7 +479,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	{
 //		VL53L0X_GetRangingMeasurementData(Dev, &RangingData);
 //		VL53L0X_ClearInterruptMask(Dev, VL53L0X_REG_SYSTEM_INTERRUPT_GPIO_NEW_SAMPLE_READY);
-		TofDataRead = 1;
+		distance_sensors_set_interrupt(&distance_sensors, 0);
 
 	}
 
@@ -568,7 +487,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		{
 	//		VL53L0X_GetRangingMeasurementData(Dev, &RangingData);
 	//		VL53L0X_ClearInterruptMask(Dev, VL53L0X_REG_SYSTEM_INTERRUPT_GPIO_NEW_SAMPLE_READY);
-			TofDataRead_2 = 1;
+		distance_sensors_set_interrupt(&distance_sensors, 1);
 
 		}
 }

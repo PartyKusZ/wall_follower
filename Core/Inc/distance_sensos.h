@@ -30,7 +30,7 @@ void distance_sensors_init(distance_sensors_t *distance_sensors, I2C_HandleTypeD
 uint8_t distance_sensors_is_data_ready(distance_sensors_t *distance_sensors, uint8_t num_of_sensor);
 
 void distance_sensors_cleer_interrupt(distance_sensors_t *distance_sensors, uint8_t num_of_sensor);
-
+void distance_sensors_set_interrupt(distance_sensors_t *distance_sensors, uint8_t num_of_sensor);
 uint16_t distance_sensors_get_distance(distance_sensors_t *distance_sensors, uint8_t num_of_sensor);
 
 

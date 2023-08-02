@@ -66,6 +66,10 @@ void distance_sensors_cleer_interrupt(distance_sensors_t *distance_sensors, uint
 	distance_sensors->data_ready[num_of_sensor] = 0;
 }
 
+void distance_sensors_set_interrupt(distance_sensors_t *distance_sensors, uint8_t num_of_sensor){
+	distance_sensors->data_ready[num_of_sensor] = 1;
+}
+
 uint16_t distance_sensors_get_distance(distance_sensors_t *distance_sensors, uint8_t num_of_sensor){
 	VL53L0X_GetRangingMeasurementData(distance_sensors->sensors[num_of_sensor], &distance_sensors->ranging_data[num_of_sensor]);
 	VL53L0X_ClearInterruptMask(distance_sensors->sensors[num_of_sensor], VL53L0X_REG_SYSTEM_INTERRUPT_GPIO_NEW_SAMPLE_READY);
