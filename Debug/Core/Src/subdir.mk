@@ -4,6 +4,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../Core/Src/distance_sensors.c \
 ../Core/Src/main.c \
 ../Core/Src/stm32f3xx_hal_msp.c \
 ../Core/Src/stm32f3xx_it.c \
@@ -12,6 +13,7 @@ C_SRCS += \
 ../Core/Src/system_stm32f3xx.c 
 
 OBJS += \
+./Core/Src/distance_sensors.o \
 ./Core/Src/main.o \
 ./Core/Src/stm32f3xx_hal_msp.o \
 ./Core/Src/stm32f3xx_it.o \
@@ -20,6 +22,7 @@ OBJS += \
 ./Core/Src/system_stm32f3xx.o 
 
 C_DEPS += \
+./Core/Src/distance_sensors.d \
 ./Core/Src/main.d \
 ./Core/Src/stm32f3xx_hal_msp.d \
 ./Core/Src/stm32f3xx_it.d \
@@ -29,6 +32,8 @@ C_DEPS += \
 
 
 # Each subdirectory must supply rules for building sources it contributes
+Core/Src/distance_sensors.o: ../Core/Src/distance_sensors.c
+	arm-none-eabi-gcc "$<" -mcpu=cortex-m4 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F303x8 -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F3xx_HAL_Driver/Inc -I../Drivers/STM32F3xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F3xx/Include -I../Drivers/CMSIS/Include -I"/home/kubus/STM32CubeIDE/workspace_1.4.0/VL53L0X_tests/Drivers/VL530X/platform/inc" -I"/home/kubus/STM32CubeIDE/workspace_1.4.0/VL53L0X_tests/Drivers/VL530X/core/inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/distance_sensors.d" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
 Core/Src/main.o: ../Core/Src/main.c
 	arm-none-eabi-gcc "$<" -mcpu=cortex-m4 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F303x8 -DDEBUG -c -I../Core/Inc -I../Drivers/STM32F3xx_HAL_Driver/Inc -I../Drivers/STM32F3xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F3xx/Include -I../Drivers/CMSIS/Include -I"/home/kubus/STM32CubeIDE/workspace_1.4.0/VL53L0X_tests/Drivers/VL530X/platform/inc" -I"/home/kubus/STM32CubeIDE/workspace_1.4.0/VL53L0X_tests/Drivers/VL530X/core/inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"$@" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
 Core/Src/stm32f3xx_hal_msp.o: ../Core/Src/stm32f3xx_hal_msp.c
