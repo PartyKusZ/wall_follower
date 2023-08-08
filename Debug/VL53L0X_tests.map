@@ -191,11 +191,11 @@ Discarded input sections
  .data          0x0000000000000000        0x0 Core/Src/distance_data_processing.o
  .bss           0x0000000000000000        0x0 Core/Src/distance_data_processing.o
  .text.distance_data_processing_get_distance
-                0x0000000000000000      0x100 Core/Src/distance_data_processing.o
+                0x0000000000000000       0xf0 Core/Src/distance_data_processing.o
  .text.distance_data_processing_get_angle
-                0x0000000000000000       0xb8 Core/Src/distance_data_processing.o
- .debug_info    0x0000000000000000     0x1659 Core/Src/distance_data_processing.o
- .debug_abbrev  0x0000000000000000      0x232 Core/Src/distance_data_processing.o
+                0x0000000000000000       0xa0 Core/Src/distance_data_processing.o
+ .debug_info    0x0000000000000000      0xa62 Core/Src/distance_data_processing.o
+ .debug_abbrev  0x0000000000000000      0x1ed Core/Src/distance_data_processing.o
  .debug_aranges
                 0x0000000000000000       0x28 Core/Src/distance_data_processing.o
  .debug_ranges  0x0000000000000000       0x18 Core/Src/distance_data_processing.o
@@ -278,10 +278,10 @@ Discarded input sections
  .debug_macro   0x0000000000000000       0x17 Core/Src/distance_data_processing.o
  .debug_macro   0x0000000000000000      0x1d2 Core/Src/distance_data_processing.o
  .debug_macro   0x0000000000000000       0x16 Core/Src/distance_data_processing.o
- .debug_line    0x0000000000000000      0xa69 Core/Src/distance_data_processing.o
- .debug_str     0x0000000000000000    0xa65e8 Core/Src/distance_data_processing.o
+ .debug_line    0x0000000000000000      0xa63 Core/Src/distance_data_processing.o
+ .debug_str     0x0000000000000000    0xa597b Core/Src/distance_data_processing.o
  .comment       0x0000000000000000       0x7c Core/Src/distance_data_processing.o
- .debug_frame   0x0000000000000000       0x64 Core/Src/distance_data_processing.o
+ .debug_frame   0x0000000000000000       0x60 Core/Src/distance_data_processing.o
  .ARM.attributes
                 0x0000000000000000       0x39 Core/Src/distance_data_processing.o
  .group         0x0000000000000000        0xc Core/Src/distance_sensors.o

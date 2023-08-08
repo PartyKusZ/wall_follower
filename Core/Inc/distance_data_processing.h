@@ -6,8 +6,8 @@
 
 #define X1 12.7
 
-float distance_data_processing_get_distance(distance_sensors_t *sensors);
-float distance_data_processing_get_angle(distance_sensors_t *sensors);
+float distance_data_processing_get_distance(uint16_t dist_0, uint16_t dist_1);
+float distance_data_processing_get_angle(uint16_t dist_0, uint16_t dist_1);
 
 
 
