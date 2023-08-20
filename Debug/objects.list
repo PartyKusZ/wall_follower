@@ -4,6 +4,7 @@
 "Core/Src/filter_moving_averange.o"
 "Core/Src/main.o"
 "Core/Src/motors.o"
+"Core/Src/motors_controller.o"
 "Core/Src/pid.o"
 "Core/Src/stm32f3xx_hal_msp.o"
 "Core/Src/stm32f3xx_it.o"
