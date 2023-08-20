@@ -1,5 +1,7 @@
+"Core/Src/circular_buffer.o"
 "Core/Src/distance_data_processing.o"
 "Core/Src/distance_sensors.o"
+"Core/Src/filter_moving_averange.o"
 "Core/Src/main.o"
 "Core/Src/motors.o"
 "Core/Src/pid.o"
