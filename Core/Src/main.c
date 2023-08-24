@@ -26,6 +26,7 @@
 #include "vl53l0x_api.h"
 #include "distance_sensos.h"
 #include "motors.h"
+#include "remote_controller.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,9 +52,9 @@ TIM_HandleTypeDef htim17;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-uint8_t Message[64];
-uint8_t MessageLen;
+
 distance_sensors_t distance_sensors;
+remote_controller_t remote_controller;
 
 /* USER CODE END PV */
 
@@ -109,8 +110,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
 
-  MessageLen = sprintf((char*)Message, "msalamon.pl VL53L0X Continuous mode\n\r");
-   HAL_UART_Transmit(&huart2, Message, MessageLen, 100);
+
+  // HAL_UART_Transmit(&huart2, Message, MessageLen, 100);
 
 
 
@@ -130,9 +131,13 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
    distance_sensors_init(&distance_sensors, &hi2c1);
+   remote_controller_init(&remote_controller, &huart2);
    motors_init(&htim16, &htim17);
    motors_set_speed(RIGHT_MOTOR, 50);
-
+   motors_set_speed(LEFT_MOTOR, 50);
+   HAL_UART_Receive_IT(remote_controller.uart,&remote_controller.one_byte,1);
+//  uint8_t tab[30];
+//  uint16_t x;
 
   while (1)
   {
@@ -140,8 +145,8 @@ int main(void)
 	  if(distance_sensors_is_data_ready(&distance_sensors, 0))
 	  {
 
-		MessageLen = sprintf((char*)Message, "Measured distance: %i\n\r",distance_sensors_get_distance(&distance_sensors, 0));
-		HAL_UART_Transmit(&huart2, Message, MessageLen, 100);
+		//MessageLen = sprintf((char*)Message, "Measured distance: %i\n\r",distance_sensors_get_distance(&distance_sensors, 0));
+		//HAL_UART_Transmit(&huart2, Message, MessageLen, 100);
 		distance_sensors_cleer_interrupt(&distance_sensors, 0);
 
 	  }
@@ -149,13 +154,32 @@ int main(void)
 	  if(distance_sensors_is_data_ready(&distance_sensors, 1))
 	 	  {
 
-	 		MessageLen = sprintf((char*)Message, "Measured distance_2: %i\n\r", distance_sensors_get_distance(&distance_sensors, 1));
-	 		HAL_UART_Transmit(&huart2, Message, MessageLen, 100);
+	 		//MessageLen = sprintf((char*)Message, "Measured distance_2: %i\n\r", distance_sensors_get_distance(&distance_sensors, 1));
+	 		//HAL_UART_Transmit(&huart2, Message, MessageLen, 100);
 	 		distance_sensors_cleer_interrupt(&distance_sensors, 1);
 
 	 	  }
+	  if(remote_controller_is_data_ready(&remote_controller)){
+		  remote_controller_parser(&remote_controller);
+		  motors_set_speed(RIGHT_MOTOR, (int)(remote_controller.ki));
+		  motors_set_speed(LEFT_MOTOR, (int)(remote_controller.ki));
+		  remote_controller_celar_interrupt(&remote_controller);
+		  HAL_UART_Receive_IT(remote_controller.uart,&remote_controller.one_byte,1);
+	  }
+
+//	  HAL_UART_Receive(&huart2, tab, sizeof(tab), 2000);
+//	  x = str_to_num(tab);
+//
+//	  HAL_Delay(10);
+//	  motors_set_speed(LEFT_MOTOR, x);
+//	  tab[0] = '\0';
 
 
+
+	  //HAL_Delay(50);
+	  //HAL_UART_Transmit(&huart2, tab, sizeof(tab),  1000);
+
+	  //HAL_Delay(1500);
 
 
     /* USER CODE END WHILE */
@@ -397,7 +421,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 38400;
+  huart2.Init.BaudRate = 9600;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -405,7 +429,8 @@ static void MX_USART2_UART_Init(void)
   huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart2.Init.OverSampling = UART_OVERSAMPLING_16;
   huart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
-  huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_SWAP_INIT;
+  huart2.AdvancedInit.Swap = UART_ADVFEATURE_SWAP_ENABLE;
   if (HAL_UART_Init(&huart2) != HAL_OK)
   {
     Error_Handler();
@@ -484,8 +509,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if(GPIO_Pin == TOF_INT_0_Pin)
 	{
 //		VL53L0X_GetRangingMeasurementData(Dev, &RangingData);
@@ -501,6 +525,21 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		distance_sensors_set_interrupt(&distance_sensors, 1);
 
 		}
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
+
+	if(huart->Instance == remote_controller.uart->Instance){
+		remote_controller.data[remote_controller.buf_counter++] = remote_controller.one_byte;
+		if(remote_controller.one_byte != '\n'){
+			HAL_UART_Receive_IT(remote_controller.uart,&remote_controller.one_byte,1);
+		}else{
+			remote_controller_set_interrupt(&remote_controller);
+			remote_controller.buf_counter = 0;
+		}
+	}
+
+
 }
 /* USER CODE END 4 */
 
