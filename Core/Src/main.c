@@ -136,8 +136,8 @@ int main(void)
    motors_set_speed(RIGHT_MOTOR, 50);
    motors_set_speed(LEFT_MOTOR, 50);
    HAL_UART_Receive_IT(remote_controller.uart,&remote_controller.one_byte,1);
-//  uint8_t tab[30];
-//  uint16_t x;
+   uint8_t tab[30];
+   uint16_t x;
 
   while (1)
   {
@@ -145,8 +145,8 @@ int main(void)
 	  if(distance_sensors_is_data_ready(&distance_sensors, 0))
 	  {
 
-		//MessageLen = sprintf((char*)Message, "Measured distance: %i\n\r",distance_sensors_get_distance(&distance_sensors, 0));
-		//HAL_UART_Transmit(&huart2, Message, MessageLen, 100);
+		x = sprintf((char*)tab, "L 1: %i\n",distance_sensors_get_distance(&distance_sensors, 0));
+		//HAL_UART_Transmit(&huart2, tab, x, 100);
 		distance_sensors_cleer_interrupt(&distance_sensors, 0);
 
 	  }
@@ -154,11 +154,20 @@ int main(void)
 	  if(distance_sensors_is_data_ready(&distance_sensors, 1))
 	 	  {
 
-	 		//MessageLen = sprintf((char*)Message, "Measured distance_2: %i\n\r", distance_sensors_get_distance(&distance_sensors, 1));
-	 		//HAL_UART_Transmit(&huart2, Message, MessageLen, 100);
+		  	  x = sprintf((char*)tab, "L 2: %i\n",distance_sensors_get_distance(&distance_sensors, 1));
+		  		//HAL_UART_Transmit(&huart2, tab, x, 100);
 	 		distance_sensors_cleer_interrupt(&distance_sensors, 1);
 
 	 	  }
+
+	  if(distance_sensors_is_data_ready(&distance_sensors, 2))
+	  	 	  {
+
+	  		  	  x = sprintf((char*)tab, "L 3: %i\n",distance_sensors_get_distance(&distance_sensors, 2));
+	  		  //	HAL_UART_Transmit(&huart2, tab, x, 100);
+	  	 		distance_sensors_cleer_interrupt(&distance_sensors, 2);
+
+	  	 	  }
 	  if(remote_controller_is_data_ready(&remote_controller)){
 		  remote_controller_parser(&remote_controller);
 		  motors_set_speed(RIGHT_MOTOR, (int)(remote_controller.ki));
@@ -471,17 +480,11 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : TOF_INT_0_Pin */
-  GPIO_InitStruct.Pin = TOF_INT_0_Pin;
+  /*Configure GPIO pins : TOF_INT_0_Pin TOF_INT_2_Pin */
+  GPIO_InitStruct.Pin = TOF_INT_0_Pin|TOF_INT_2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(TOF_INT_0_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : TOF_INT_2_Pin */
-  GPIO_InitStruct.Pin = TOF_INT_2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(TOF_INT_2_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : TOF_INT_1_Pin */
   GPIO_InitStruct.Pin = TOF_INT_1_Pin;
@@ -525,6 +528,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 		distance_sensors_set_interrupt(&distance_sensors, 1);
 
 		}
+	if(GPIO_Pin == TOF_INT_2_Pin)
+			{
+		//		VL53L0X_GetRangingMeasurementData(Dev, &RangingData);
+		//		VL53L0X_ClearInterruptMask(Dev, VL53L0X_REG_SYSTEM_INTERRUPT_GPIO_NEW_SAMPLE_READY);
+			distance_sensors_set_interrupt(&distance_sensors, 2);
+
+			}
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
