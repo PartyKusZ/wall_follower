@@ -133,8 +133,10 @@ int main(void)
    distance_sensors_init(&distance_sensors, &hi2c1);
    remote_controller_init(&remote_controller, &huart2);
    motors_init(&htim16, &htim17);
-   motors_set_speed(RIGHT_MOTOR, 50);
-   motors_set_speed(LEFT_MOTOR, 50);
+  // motors_set_speed(RIGHT_MOTOR, 50);
+   //motors_set_speed(LEFT_MOTOR, 50);
+   motors_set_direction(RIGHT_MOTOR, GO_FORWARD);
+   motors_set_direction(LEFT_MOTOR, GO_FORWARD);
    HAL_UART_Receive_IT(remote_controller.uart,&remote_controller.one_byte,1);
    uint8_t tab[30];
    uint16_t x;
@@ -164,7 +166,7 @@ int main(void)
 	  	 	  {
 
 	  		  	  x = sprintf((char*)tab, "L 3: %i\n",distance_sensors_get_distance(&distance_sensors, 2));
-	  		  //	HAL_UART_Transmit(&huart2, tab, x, 100);
+	  		  	HAL_UART_Transmit(&huart2, tab, x, 100);
 	  	 		distance_sensors_cleer_interrupt(&distance_sensors, 2);
 
 	  	 	  }
