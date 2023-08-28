@@ -30,6 +30,26 @@ void motors_set_speed(motors_t motor, uint8_t speed){
 	}
 }
 
+void motors_set_direction(motors_t motor, motors_t direction){
+	if(motor == LEFT_MOTOR){
+		if(direction == GO_FORWARD){
+			HAL_GPIO_WritePin(SILNIK_L_1_GPIO_Port, SILNIK_L_1_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(SILNIK_L_2_GPIO_Port, SILNIK_L_2_Pin, GPIO_PIN_RESET);
+		}else if(direction == GO_BACKWARDS){
+			HAL_GPIO_WritePin(SILNIK_L_1_GPIO_Port, SILNIK_L_1_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(SILNIK_L_2_GPIO_Port, SILNIK_L_2_Pin, GPIO_PIN_SET);
+		}
+	}else if(motor == RIGHT_MOTOR){
+		if(direction == GO_FORWARD){
+			HAL_GPIO_WritePin(SILNIK_P_1_GPIO_Port, SILNIK_P_1_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(SILNIK_P_2_GPIO_Port, SILNIK_P_2_Pin, GPIO_PIN_RESET);
+		}else if(direction == GO_BACKWARDS){
+			HAL_GPIO_WritePin(SILNIK_P_1_GPIO_Port, SILNIK_P_1_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(SILNIK_P_2_GPIO_Port, SILNIK_P_2_Pin, GPIO_PIN_SET);
+		}
+	}
+}
+
 uint32_t motors_get_speed(motors_t motor){
 	if(motor == LEFT_MOTOR){
 		return TIM16->CCR1;
