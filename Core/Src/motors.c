@@ -16,7 +16,7 @@ void motors_init(TIM_HandleTypeDef *timer_1, TIM_HandleTypeDef *timer_2){
 }
 
 
-void motors_set_speed(motors_t motor, uint8_t speed){
+void motors_set_speed(motors_t motor, int16_t speed){
 	if(speed < 0){
 		speed = 0;
 	}else if(speed > 100){

@@ -25,7 +25,12 @@
 
 #include "vl53l0x_api.h"
 #include "distance_sensos.h"
+#include "distance_data_processing.h"
+#include "circular_buffer.h"
+#include "filter_moving_averange.h"
 #include "motors.h"
+#include "pid.h"
+#include "robot_controller.h"
 #include "remote_controller.h"
 /* USER CODE END Includes */
 
@@ -54,7 +59,10 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 
 distance_sensors_t distance_sensors;
+circular_buffer_t buffer[3];
+_pid_t pid;
 remote_controller_t remote_controller;
+//volatile uint8_t uart_tx_flag = 1;
 
 /* USER CODE END PV */
 
@@ -131,52 +139,62 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
    distance_sensors_init(&distance_sensors, &hi2c1);
+   circular_buffer_init(&buffer[0]);
+   circular_buffer_init(&buffer[1]);
+   circular_buffer_init(&buffer[2]);
+   pid_init(&pid);
    remote_controller_init(&remote_controller, &huart2);
    motors_init(&htim16, &htim17);
+   robot_controller_init();
+
+   uint16_t distances[3];
+   int16_t pid_out = 0 ;
   // motors_set_speed(RIGHT_MOTOR, 50);
    //motors_set_speed(LEFT_MOTOR, 50);
-   motors_set_direction(RIGHT_MOTOR, GO_FORWARD);
-   motors_set_direction(LEFT_MOTOR, GO_FORWARD);
+//   motors_set_direction(RIGHT_MOTOR, GO_FORWARD);
+//   motors_set_direction(LEFT_MOTOR, GO_FORWARD);
+   //x = sprintf((char*)tab, "L 1: %i\n",distance_sensors_get_distance(&distance_sensors, 0));
+   		//HAL_UART_Transmit(&huart2, tab, x, 100);
    HAL_UART_Receive_IT(remote_controller.uart,&remote_controller.one_byte,1);
-   uint8_t tab[30];
-   uint16_t x;
 
-  while (1)
-  {
+//   uint8_t tab[20];
+//   uint16_t x;
 
-	  if(distance_sensors_is_data_ready(&distance_sensors, 0))
-	  {
+  while (1){
 
-		x = sprintf((char*)tab, "L 1: %i\n",distance_sensors_get_distance(&distance_sensors, 0));
-		//HAL_UART_Transmit(&huart2, tab, x, 100);
-		distance_sensors_cleer_interrupt(&distance_sensors, 0);
+	  if(distance_sensors_is_data_ready(&distance_sensors, 0)){
+		  circular_buffer_push(&buffer[0], distance_sensors_get_distance(&distance_sensors, 0));
+		  distance_sensors_cleer_interrupt(&distance_sensors, 0);
+	  }
+
+	  if(distance_sensors_is_data_ready(&distance_sensors, 1)){
+		  circular_buffer_push(&buffer[1], distance_sensors_get_distance(&distance_sensors, 1));
+	 	  distance_sensors_cleer_interrupt(&distance_sensors, 1);
 
 	  }
 
-	  if(distance_sensors_is_data_ready(&distance_sensors, 1))
-	 	  {
-
-		  	  x = sprintf((char*)tab, "L 2: %i\n",distance_sensors_get_distance(&distance_sensors, 1));
-		  		//HAL_UART_Transmit(&huart2, tab, x, 100);
-	 		distance_sensors_cleer_interrupt(&distance_sensors, 1);
-
-	 	  }
-
-	  if(distance_sensors_is_data_ready(&distance_sensors, 2))
-	  	 	  {
-
-	  		  	  x = sprintf((char*)tab, "L 3: %i\n",distance_sensors_get_distance(&distance_sensors, 2));
-	  		  	HAL_UART_Transmit(&huart2, tab, x, 100);
-	  	 		distance_sensors_cleer_interrupt(&distance_sensors, 2);
-
-	  	 	  }
+	  if(distance_sensors_is_data_ready(&distance_sensors, 2)){
+		  circular_buffer_push(&buffer[2], distance_sensors_get_distance(&distance_sensors, 2));
+		  distance_sensors_cleer_interrupt(&distance_sensors, 2);
+	  }
 	  if(remote_controller_is_data_ready(&remote_controller)){
 		  remote_controller_parser(&remote_controller);
-		  motors_set_speed(RIGHT_MOTOR, (int)(remote_controller.ki));
-		  motors_set_speed(LEFT_MOTOR, (int)(remote_controller.ki));
 		  remote_controller_celar_interrupt(&remote_controller);
 		  HAL_UART_Receive_IT(remote_controller.uart,&remote_controller.one_byte,1);
 	  }
+	  distances[0] = filter_moving_averange(circular_buffer_get_data(&buffer[0]), BUFFER_SIZE);
+	  distances[1] = filter_moving_averange(circular_buffer_get_data(&buffer[1]), BUFFER_SIZE);
+	  distances[2] = filter_moving_averange(circular_buffer_get_data(&buffer[2]), BUFFER_SIZE);
+	  pid_set_params(&pid, remote_controller.kp, remote_controller.ki, remote_controller.kd, 100);
+	  pid_out = pid_calculate(&pid, 200, distance_data_processing_get_distance(distances[1], distances[0]));
+	  if(remote_controller.robot_state){
+		  robot_controller(pid_out, distances[2]);
+	  }else{
+		  motors_set_speed(LEFT_MOTOR, 0);
+		  motors_set_speed(RIGHT_MOTOR, 0);
+	  }
+
+
 
 //	  HAL_UART_Receive(&huart2, tab, sizeof(tab), 2000);
 //	  x = str_to_num(tab);
@@ -553,6 +571,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 
 
 }
+//void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
+//
+//	if(huart->Instance == remote_controller.uart->Instance){
+//		uart_tx_flag = 1;
+//	}
+//}
 /* USER CODE END 4 */
 
 /**

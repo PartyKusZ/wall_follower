@@ -3,7 +3,7 @@
 #define INC_PID_H_
 #include "main.h"
 
-typedef struct pid_t {
+ struct _pid_t {
 
 	float kp;
 	float ki;
@@ -14,11 +14,11 @@ typedef struct pid_t {
 
 	float windup_limit;
 
-} pid_t;
+} typedef _pid_t;
 
-void pid_init(pid_t *pid);
-void pid_set_params(pid_t *pid, float kp, float ki, float kd, float windup_limit);
-uint8_t pid_calculate(pid_t *pid, uint16_t setpoint, uint16_t process_val);
+void pid_init(_pid_t *pid);
+void pid_set_params(_pid_t*pid, float kp, float ki, float kd, float windup_limit);
+int16_t pid_calculate(_pid_t *pid, uint16_t setpoint, uint16_t process_val);
 
 
 

@@ -2,7 +2,7 @@
 #define INC_CIRCULAR_BUFFER_H_
 
 #include "main.h"
-#define BUFFER_SIZE 5
+#define BUFFER_SIZE 15
 
 typedef struct circular_buffer_t{
 

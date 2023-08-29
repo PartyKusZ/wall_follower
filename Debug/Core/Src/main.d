@@ -36,8 +36,11 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  /home/kubus/STM32CubeIDE/workspace_1.4.0/VL53L0X_tests/Drivers/VL530X/platform/inc/vl53l0x_platform.h \
  /home/kubus/STM32CubeIDE/workspace_1.4.0/VL53L0X_tests/Drivers/VL530X/core/inc/vl53l0x_def.h \
  /home/kubus/STM32CubeIDE/workspace_1.4.0/VL53L0X_tests/Drivers/VL530X/platform/inc/vl53l0x_platform_log.h \
- ../Core/Inc/distance_sensos.h ../Core/Inc/main.h ../Core/Inc/motors.h \
- ../Core/Inc/remote_controller.h
+ ../Core/Inc/distance_sensos.h ../Core/Inc/main.h \
+ ../Core/Inc/distance_data_processing.h ../Core/Inc/distance_sensos.h \
+ ../Core/Inc/circular_buffer.h ../Core/Inc/filter_moving_averange.h \
+ ../Core/Inc/motors.h ../Core/Inc/pid.h ../Core/Inc/robot_controller.h \
+ ../Core/Inc/motors.h ../Core/Inc/remote_controller.h
 
 ../Core/Inc/main.h:
 
@@ -118,6 +121,20 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/distance_sensos.h:
 
 ../Core/Inc/main.h:
+
+../Core/Inc/distance_data_processing.h:
+
+../Core/Inc/distance_sensos.h:
+
+../Core/Inc/circular_buffer.h:
+
+../Core/Inc/filter_moving_averange.h:
+
+../Core/Inc/motors.h:
+
+../Core/Inc/pid.h:
+
+../Core/Inc/robot_controller.h:
 
 ../Core/Inc/motors.h:
 

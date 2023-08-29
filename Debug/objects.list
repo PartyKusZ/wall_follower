@@ -6,6 +6,7 @@
 "Core/Src/motors.o"
 "Core/Src/pid.o"
 "Core/Src/remote_controller.o"
+"Core/Src/robot_controller.o"
 "Core/Src/stm32f3xx_hal_msp.o"
 "Core/Src/stm32f3xx_it.o"
 "Core/Src/syscalls.o"

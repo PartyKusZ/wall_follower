@@ -20,12 +20,14 @@ typedef struct remote_controller_t{
 	uint8_t robot_state; // program on/off
 	uint8_t pwm_l;
 	uint8_t pwm_r;
+	uint8_t speed;
 	uint8_t interrupt;
 
 }remote_controller_t;
 
 void remote_controller_init(remote_controller_t *controller, UART_HandleTypeDef *uart);
 uint16_t str_to_num(uint8_t *data);
+float str_to_num_f(uint8_t *data);
 void remote_controller_parser(remote_controller_t *controller);
 void remote_controller_set_interrupt(remote_controller_t *controller);
 void remote_controller_celar_interrupt(remote_controller_t *controller);

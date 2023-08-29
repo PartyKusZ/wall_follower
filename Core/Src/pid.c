@@ -1,6 +1,6 @@
 #include "pid.h"
 
-void pid_init(pid_t *pid){
+void pid_init(_pid_t *pid){
 	pid->kp = 0.0;
 	pid->ki = 0.0;
 	pid->kd = 0.0;
@@ -9,7 +9,7 @@ void pid_init(pid_t *pid){
 	pid->windup_limit = 0.0;
 }
 
-void pid_set_params(pid_t *pid, float kp, float ki, float kd, float windup_limit) {
+void pid_set_params(_pid_t *pid, float kp, float ki, float kd, float windup_limit) {
 
 	pid->kp = kp;
 	pid->ki = ki;
@@ -18,7 +18,7 @@ void pid_set_params(pid_t *pid, float kp, float ki, float kd, float windup_limit
 }
 
 
-uint8_t pid_calculate(pid_t *pid, uint16_t setpoint, uint16_t process_val){
+int16_t pid_calculate(_pid_t *pid, uint16_t setpoint, uint16_t process_val){
 
 	int16_t error;
 	float p_term;
@@ -41,6 +41,6 @@ uint8_t pid_calculate(pid_t *pid, uint16_t setpoint, uint16_t process_val){
 
 	pid->error_prev = error;
 
-	return (uint8_t)(p_term + i_term + d_term);
+	return (int16_t)(p_term + i_term + d_term);
 
 }
